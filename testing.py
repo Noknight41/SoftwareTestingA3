@@ -7,60 +7,62 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.events import (AbstractEventListener, EventFiringWebDriver)
+import os
+
+from excelDriver import Excel 
 
 PATH=".\chromedriver.exe"
 
-class CustomEventListener(AbstractEventListener):
-    def before_navigate_to(self, url, driver):
-      pass
-    
-    def after_navigate_to(self, url, driver):
-      pass
-
-    def before_find(self, by, value, driver):
-      pass
-
-    def after_find(self, by, value, driver):
-      pass
-
-    def before_quit(self, driver):
-      pass
-
-    def after_quit(self, driver):
-      pass
-
 class Selen:
   def __init__(self):
-    pass
+    self.driver = None
+    self.options = Options()
+    self.options.add_experimental_option("detach", True)
+    self.options.add_argument('headless')
+    self.options.add_argument('--ignore-certificate-errors')
+    self.options.add_argument('--ignore-ssl-errors')
+    self.service = Service(PATH)
     
-  def passwordStrengthDTT(self):
-    global driver, event_firing_driver
-    options = Options()
-    options.add_experimental_option("detach", True)
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--ignore-ssl-errors')
-    service = Service(PATH)
-    driver = webdriver.Chrome(service=service, chrome_options=options)
-    driver.maximize_window()
-    event_firing_driver = EventFiringWebDriver(driver, AbstractEventListener())
+  def setup(self):
+    self.driver = webdriver.Chrome(service=self.service, chrome_options=self.options)
     
-    event_firing_driver.get("https://magento.softwaretestingboard.com/customer/account/create/")
-    passwordInput = event_firing_driver.find_element(By.ID, "password")
+  def passwordStrengthDTT(self, id, i, o, result):
+    self.setup()
+    self.driver.get("https://magento.softwaretestingboard.com/customer/account/create/")
+    passwordInput = self.driver.find_element(By.ID, "password")
     try:
-      time.sleep(1)
-      passwordStrength = event_firing_driver.find_element(By.ID, 'password-strength-meter-label') 
+      time.sleep(2)
+      passwordStrength = self.driver.find_element(By.ID, 'password-strength-meter-label') 
       passwordInput.clear()
-      passwordInput.send_keys("Hweqwello12")
-      print(passwordStrength.text)
+      passwordInput.send_keys(i)
+      print(passwordStrength.text == o)
+      result.append([id, o, passwordStrength.text, passwordStrength.text == o])
     except TimeoutException:
       print("Loading took too much time!")
-    event_firing_driver.quit()
+    self.driver.quit()
+
+class RunTest:
+  def __init__(self):
+    pass
   
+  def runDTT(self):
+    if os.path.exists('Output/DTT.xlsx'):
+      os.remove('Output/DTT.xlsx')
+
+    result = [['Testcase', 'Expected', 'Got', 'Result']]
+    instance = Selen()
+    excel = Excel("Input/DTT.xlsx")
+    DTTdata = excel.readData("Input")
+
+    for testcase in DTTdata:
+      instance.passwordStrengthDTT(testcase[0], testcase[1], testcase[2], result)
   
-instance = Selen()
-instance.passwordStrengthDTT()
-instance.passwordStrengthDTT()
-instance.passwordStrengthDTT()
-instance.passwordStrengthDTT()
-instance.passwordStrengthDTT()
+    excel.writeData(result, "DTT")
+    
+instance = RunTest()
+instance.runDTT()
+
+
+
+
+
