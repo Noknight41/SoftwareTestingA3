@@ -25,6 +25,11 @@ source .\myenv\Scripts\activate.fish (Fish shell)
 .\myenv\Scripts\Activate.ps1 (Powershell)
 ```
 
+## Install Python Package 
+```
+pip install -r .\requiremnet.txt
+```
+
 ## Deactivate VENV
 ```
 deactivate
