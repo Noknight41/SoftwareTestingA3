@@ -1,6 +1,6 @@
 import time
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
@@ -11,7 +11,11 @@ import os
 
 from excelDriver import Excel 
 
+# windows
 PATH=".\chromedriver.exe"
+
+# ubuntu
+# PATH = "./chromedriver"
 
 class Selen:
   def __init__(self):
@@ -36,7 +40,39 @@ class Selen:
       passwordInput.clear()
       passwordInput.send_keys(i)
       print(passwordStrength.text == o)
-      result.append([id, o, passwordStrength.text, passwordStrength.text == o])
+      result.append([id, o, passwordStrength.text, str(passwordStrength.text == o)])
+    except TimeoutException:
+      print("Loading took too much time!")
+    self.driver.quit()
+
+  def loginDTT(self, id, e, p, o, result):
+    self.setup()
+    loginUrl = 'https://magento.softwaretestingboard.com/customer/account/login'
+    self.driver.get(loginUrl)
+    emailInput = self.driver.find_element(By.ID, "email")
+    passwordInput = self.driver.find_element(By.ID, "pass")
+    submitButton = self.driver.find_element(By.ID, "send2")
+    try:
+      emailInput.clear()
+      emailInput.send_keys(e)
+      passwordInput.clear()
+      passwordInput.send_keys(p)
+      submitButton.click()
+
+      got = None
+      try:
+          self.driver.find_element(By.ID, "email-error")
+          got = 'invalid email'
+      except NoSuchElementException:
+          wait = WebDriverWait(self.driver, 10)
+          wait.until(lambda driver: driver.current_url != loginUrl)
+
+          if self.driver.current_url == 'https://magento.softwaretestingboard.com/customer/account/':
+              got = 'login success'
+          else:
+              got = 'login failure'
+      print(got == o)
+      result.append([id, o, got, str(got == o)])
     except TimeoutException:
       print("Loading took too much time!")
     self.driver.quit()
@@ -46,8 +82,8 @@ class RunTest:
     pass
   
   def runDTT(self):
-    if os.path.exists('Output/DTT.xlsx'):
-      os.remove('Output/DTT.xlsx')
+    if os.path.exists('./Output/DTT.xlsx'):
+      os.remove('./Output/DTT.xlsx')
 
     result = [['Testcase', 'Expected', 'Got', 'Result']]
     instance = Selen()
@@ -58,9 +94,24 @@ class RunTest:
       instance.passwordStrengthDTT(testcase[0], testcase[1], testcase[2], result)
   
     excel.writeData(result, "DTT")
+
+  def runECT(self):
+    if os.path.exists('./Output/ECT.xlsx'):
+      os.remove('./Output/ECT.xlsx')
+
+    result = [['Testcase', 'Expected', 'Got', 'Result']]
+    instance = Selen()
+    excel = Excel("Input/ECT.xlsx")
+    ECTdata = excel.readData("Input")
+
+    for testcase in ECTdata:
+      instance.loginDTT(testcase[0], testcase[1], testcase[2], testcase[3], result)
+
+    excel.writeData(result, "ECT")
     
 instance = RunTest()
-instance.runDTT()
+# instance.runDTT()
+instance.runECT()
 
 
 
