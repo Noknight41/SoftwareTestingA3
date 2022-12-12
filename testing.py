@@ -10,8 +10,10 @@ from selenium.webdriver.common.by import By
 import os
 
 from excelDriver import Excel 
+from wishListUTC import TH1, TH2, TH3, TH4
 
 PATH=".\chromedriver.exe"
+PATHFORMAC="./chromedriver"
 
 class Selen:
   def __init__(self):
@@ -21,7 +23,7 @@ class Selen:
     self.options.add_argument('headless')
     self.options.add_argument('--ignore-certificate-errors')
     self.options.add_argument('--ignore-ssl-errors')
-    self.service = Service(PATH)
+    self.service = Service(PATHFORMAC)
     
   def setup(self):
     self.driver = webdriver.Chrome(service=self.service, chrome_options=self.options)
@@ -40,7 +42,23 @@ class Selen:
     except TimeoutException:
       print("Loading took too much time!")
     self.driver.quit()
-
+  
+  def wishListUTC(self, case, category, product, email, password):
+    self.setup()
+    try:
+      if case == 'TH1':
+        return TH1(self.driver, category , product, email, password)
+      if case == 'TH2':
+        return TH2(self.driver, category , product, email, password)
+      if case == 'TH3':
+        return TH3(self.driver, category , product, email, password)
+      if case == 'TH4':
+        return TH4(self.driver, category , product, email, password)  
+    except TimeoutException:
+      print("Loading took too much time!")
+    except:
+      print("Something went wrong in wishListUTC")
+        
 class RunTest:
   def __init__(self):
     pass
@@ -59,8 +77,27 @@ class RunTest:
   
     excel.writeData(result, "DTT")
     
+  def runWishListUTC(self):
+    if os.path.exists('Output/UTC.xlsx'):
+      os.remove('Output/UTC.xlsx')
+
+    result = [['Testcase', 'Expected', 'Got', 'Result']]
+    instance = Selen()
+    excel = Excel("Input/UTC.xlsx")
+    UTCdata = excel.readData("Input")
+    for testcase in UTCdata:
+      if(testcase[0] == ''):
+        continue
+      data = instance.wishListUTC(testcase[2], testcase[3], testcase[4], testcase[5], testcase[6])
+      if data:
+        result.append([testcase[0], 'True', 'True', 'Passed'])
+      else:
+        result.append([testcase[0], 'True', 'False', 'Failed'])
+  
+    excel.writeData(result, "UTC")
+    
 instance = RunTest()
-instance.runDTT()
+instance.runWishListUTC()
 
 
 
