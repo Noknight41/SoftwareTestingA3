@@ -27,7 +27,7 @@ source .\myenv\Scripts\activate.fish (Fish shell)
 
 ## Install Python Package 
 ```
-pip install -r .\requiremnet.txt
+pip install -r .\requirement.txt
 ```
 
 ## Deactivate VENV
