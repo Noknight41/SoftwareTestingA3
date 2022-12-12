@@ -37,6 +37,22 @@ deactivate
 
 # Run Testing Script
 
+## Run Function Testing Part using Decision Table Testing 
 ```
-python testing.py
+python testing.py DTT
+```
+
+## Run Function Testing Part using Equivelance Class Testing 
+```
+python testing.py ECT
+```
+
+## Run Function Testing Part using Use Case Testing 
+```
+python testing.py UCT
+```
+
+## Run Non-Functional Testing Part
+```
+python testing.py NF
 ```

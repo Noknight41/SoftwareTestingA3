@@ -11,17 +11,20 @@ from selenium.webdriver.support.ui import Select as Sel
 import os
 from datetime import datetime
 from excelDriver import Excel 
+from wishListUTC import TH1, TH2, TH3, TH4
 
-# windows
-PATH=".\chromedriver.exe"
 USER="jackson@gmail.com"
 PASSWORD="donQuiote3"
 ADDRESS="688 Main.st Saint Rows NJ USA"
 LOGIN_URL='https://magento.softwaretestingboard.com/customer/account/login'
 SIGNUP_URL="https://magento.softwaretestingboard.com/customer/account/create/"
 
+# windows
+PATH=".\chromedriver.exe"
 # ubuntu
 # PATH = "./chromedriver"
+# mac
+# PATH="./chromedriver"
 
 class Selen:
   def __init__(self):
@@ -153,6 +156,22 @@ class Selen:
       print("error occrured:",e)
     self.driver.quit()
       
+  def wishListUCT(self, case, category, product, email, password):
+    self.setup()
+    try:
+      if case == 'TH1':
+        return TH1(self.driver, category , product, email, password)
+      if case == 'TH2':
+        return TH2(self.driver, category , product, email, password)
+      if case == 'TH3':
+        return TH3(self.driver, category , product, email, password)
+      if case == 'TH4':
+        return TH4(self.driver, category , product, email, password)  
+    except TimeoutException:
+      print("Loading took too much time!")
+    except:
+      print("Something went wrong in wishListUTC")
+        
 class RunTest:
   def __init__(self):
     pass
@@ -185,6 +204,25 @@ class RunTest:
 
     excel.writeData(result, "ECT")
   
+  def runUCT(self):
+    if os.path.exists('Output/UTC.xlsx'):
+      os.remove('Output/UTC.xlsx')
+
+    result = [['Testcase', 'Expected', 'Got', 'Result']]
+    instance = Selen()
+    excel = Excel("Input/UTC.xlsx")
+    UCTdata = excel.readData("Input")
+    for testcase in UCTdata:
+      if(testcase[0] == ''):
+        continue
+      data = instance.wishListUCT(testcase[2], testcase[3], testcase[4], testcase[5], testcase[6])
+      if data:
+        result.append([testcase[0], 'True', 'True', 'Passed'])
+      else:
+        result.append([testcase[0], 'True', 'False', 'Failed'])
+  
+    excel.writeData(result, "UTC")
+  
   def runNonFunc(self):
     if os.path.exists('Output/NF.xlsx'):
       os.remove('Output/NF.xlsx')
@@ -207,12 +245,15 @@ def main():
       instance.runDTT()
     if args[0] == 'ECT':
       instance.runECT()
+    if args[0] == 'UCT':
+      instance.runUCT()
     if args[0] == 'NF':
       instance.runNonFunc()   
   return  
 
 if __name__=="__main__": 
   main()
+
 
 
 
