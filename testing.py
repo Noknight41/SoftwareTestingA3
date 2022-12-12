@@ -45,14 +45,19 @@ class Selen:
   
   def wishListUTC(self, case, category, product, email, password):
     self.setup()
-    if case == 'TH1':
-      return TH1(self.driver, category , product, email, password)
-    if case == 'TH2':
-      return TH2(self.driver, category , product, email, password)
-    if case == 'TH3':
-      return TH3(self.driver, category , product, email, password)
-    if case == 'TH4':
-      return TH4(self.driver, category , product, email, password)
+    try:
+      if case == 'TH1':
+        return TH1(self.driver, category , product, email, password)
+      if case == 'TH2':
+        return TH2(self.driver, category , product, email, password)
+      if case == 'TH3':
+        return TH3(self.driver, category , product, email, password)
+      if case == 'TH4':
+        return TH4(self.driver, category , product, email, password)  
+    except TimeoutException:
+      print("Loading took too much time!")
+    except:
+      print("Something went wrong in wishListUTC")
         
 class RunTest:
   def __init__(self):

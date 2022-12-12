@@ -16,11 +16,12 @@ def TH1(driver, category, product, email, password):
             link.click()
             break
     time.sleep(3)
-    productsName = driver.find_elements(By.CSS_SELECTOR, "li.product-item .product-item-info")
+    productsName = driver.find_elements(By.CSS_SELECTOR, ".block-products-list .product-item")
     for i in productsName:
         title = i.find_element(By.CSS_SELECTOR, "a.product-item-link")
         if title.text == product:
             ActionChains(driver).move_to_element(i).perform()
+            time.sleep(3)
             addToWishList = i.find_element(By.CSS_SELECTOR, "a[title='Add to Wish List']")
     addToWishList.click()
     time.sleep(3)
@@ -56,11 +57,12 @@ def TH2(driver, category, product, email, password):
             link.click()
             break
     time.sleep(3)
-    productsName = driver.find_elements(By.CSS_SELECTOR, "li.product-item .product-item-info")
+    productsName = driver.find_elements(By.CSS_SELECTOR, ".block-products-list .product-item")
     for i in productsName:
         title = i.find_element(By.CSS_SELECTOR, "a.product-item-link")
         if title.text == product:
             ActionChains(driver).move_to_element(i).perform()
+            time.sleep(3)
             addToWishList = i.find_element(By.CSS_SELECTOR, "a[title='Add to Wish List']")
     addToWishList.click()
     time.sleep(3)
@@ -101,11 +103,12 @@ def TH3(driver, categories, product, email, password):
             link.click()
             break
     time.sleep(3)
-    productsName = driver.find_elements(By.CSS_SELECTOR, "li.product-item .product-item-info")
+    productsName = driver.find_elements(By.CSS_SELECTOR, ".block-products-list .product-item")
     for i in productsName:
         title = i.find_element(By.CSS_SELECTOR, "a.product-item-link")
         if title.text == product:
             ActionChains(driver).move_to_element(i).perform()
+            time.sleep(3)
             addToWishList = i.find_element(By.CSS_SELECTOR, "a[title='Add to Wish List']")
     addToWishList.click()
     time.sleep(3)
@@ -130,11 +133,12 @@ def TH4(driver, category, product, email, password):
     if (len(products) <= 0):
         driver.quit()
         return False
-    productsName = driver.find_elements(By.CSS_SELECTOR, "li.product-item .product-item-info")
+    productsName = driver.find_elements(By.CSS_SELECTOR, ".block-products-list .product-item")
     for i in productsName:
         title = i.find_element(By.CSS_SELECTOR, "a.product-item-link")
         if title.text == product:
             ActionChains(driver).move_to_element(i).perform()
+            time.sleep(3)
             addToWishList = i.find_element(By.CSS_SELECTOR, "a[title='Add to Wish List']")
     addToWishList.click()
     time.sleep(3)
