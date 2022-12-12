@@ -18,6 +18,8 @@ PASSWORD="donQuiote3"
 ADDRESS="688 Main.st Saint Rows NJ USA"
 LOGIN_URL='https://magento.softwaretestingboard.com/customer/account/login'
 SIGNUP_URL="https://magento.softwaretestingboard.com/customer/account/create/"
+ITEM_URL="https://magento.softwaretestingboard.com/phoebe-zipper-sweatshirt.html"
+CART_URL="https://magento.softwaretestingboard.com/checkout/cart/"
 
 # windows
 PATH=".\chromedriver.exe"
@@ -53,6 +55,40 @@ class Selen:
       result.append([id, o, passwordStrength.text, str(passwordStrength.text == o)])
     except TimeoutException:
       print("Loading took too much time!")
+    self.driver.quit()
+  
+  def addItemToCart(self):
+    self.setup()
+    self.driver.get(ITEM_URL)
+    time.sleep(4)
+    self.driver.find_element(By.ID, "option-label-size-143-item-166").click()
+    self.driver.find_element(By.ID, "option-label-color-93-item-52").click()
+    self.driver.find_element(By.ID, "product-addtocart-button").click()
+
+  def changeItemQty(self, id, input, output, result):
+    self.addItemToCart()
+    time.sleep(2)
+    self.driver.get(CART_URL)
+    time.sleep(2)
+
+    try:
+      qtyInput = self.driver.find_element(By.CSS_SELECTOR, "input.input-text.qty")
+      qtyInput.clear()
+      qtyInput.send_keys(input)
+      self.driver.find_element(By.CSS_SELECTOR, "button.action.update").click()
+      
+      time.sleep(4)
+      res = "Success"
+
+      if self.driver.find_elements(By.CSS_SELECTOR, "div.mage-error") != []:
+        res = self.driver.find_element(By.CSS_SELECTOR, "div.mage-error").text
+      elif self.driver.find_elements(By.CSS_SELECTOR, "div.modal-inner-wrap .modal-title") != []:
+        res = self.driver.find_elements(By.CSS_SELECTOR, "div.modal-inner-wrap .modal-content")[1].text
+      result.append([id, output, res, res == output])
+      print(res == output)
+    except TimeoutException:
+      print("Timeout!")
+
     self.driver.quit()
 
   def loginECT(self, id, e, p, o, result):
@@ -234,15 +270,32 @@ class RunTest:
     for testcase in NFdata:
       instance.nonFunctional(5, result)
     excel.writeData(result, "NF")
+  
+  def runBVT(self):
+    if os.path.exists('Output/BVT.xlsx'):
+      os.remove('Output/BVT.xlsx')
+
+    result = [['Testcase', 'Expected', 'Got', 'Result']]
+    instance = Selen()
+    excel = Excel("Input/BVT.xlsx")
+    BVTData = excel.readData("Input")
+
+    for testcase in BVTData:
+      instance.changeItemQty(testcase[0], testcase[1], testcase[2], result)
+			# print(testcase)
+    print(result)
+    excel.writeData(result, "BVT")
     
 def main():
   args = sys.argv[1:]
   if len(args) != 1:
     return
-  if args[0] in ['DTT', 'ECT', 'UCT', 'NF']:
+  if args[0] in ['DTT', 'BVT', 'ECT', 'UCT', 'NF']:
     instance = RunTest()
     if args[0] == 'DTT':
       instance.runDTT()
+    if args[0] == 'BVT':
+      instance.runBVT()
     if args[0] == 'ECT':
       instance.runECT()
     if args[0] == 'UCT':
@@ -253,7 +306,6 @@ def main():
 
 if __name__=="__main__": 
   main()
-
 
 
 
