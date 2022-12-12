@@ -1,4 +1,4 @@
-import time
+import sys, time
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from selenium.webdriver.support.ui import WebDriverWait
@@ -32,7 +32,6 @@ class Selen:
     self.options.add_argument('--ignore-certificate-errors')
     self.options.add_argument('--ignore-ssl-errors')
     self.options.add_argument('--window-size=1920,1080')
-     
     self.service = Service(PATH)
     
   def setup(self):
@@ -53,7 +52,7 @@ class Selen:
       print("Loading took too much time!")
     self.driver.quit()
 
-  def loginDTT(self, id, e, p, o, result):
+  def loginECT(self, id, e, p, o, result):
     self.setup()
     self.driver.get(LOGIN_URL)
     emailInput = self.driver.find_element(By.ID, "email")
@@ -72,7 +71,7 @@ class Selen:
           got = 'invalid email'
       except NoSuchElementException:
           wait = WebDriverWait(self.driver, 10)
-          wait.until(lambda driver: driver.current_url != loginUrl)
+          wait.until(lambda driver: driver.current_url != LOGIN_URL)
 
           if self.driver.current_url == 'https://magento.softwaretestingboard.com/customer/account/':
               got = 'login success'
@@ -182,7 +181,7 @@ class RunTest:
     ECTdata = excel.readData("Input")
 
     for testcase in ECTdata:
-      instance.loginDTT(testcase[0], testcase[1], testcase[2], testcase[3], result)
+      instance.loginECT(testcase[0], testcase[1], testcase[2], testcase[3], result)
 
     excel.writeData(result, "ECT")
   
@@ -198,11 +197,22 @@ class RunTest:
       instance.nonFunctional(5, result)
     excel.writeData(result, "NF")
     
+def main():
+  args = sys.argv[1:]
+  if len(args) != 1:
+    return
+  if args[0] in ['DTT', 'ECT', 'UCT', 'NF']:
+    instance = RunTest()
+    if args[0] == 'DTT':
+      instance.runDTT()
+    if args[0] == 'ECT':
+      instance.runECT()
+    if args[0] == 'NF':
+      instance.runNonFunc()   
+  return  
+
 if __name__=="__main__": 
-  instance = RunTest()
-  instance.runNonFunc()
-  # instance.runDTT()
-  # instance.runECT()
+  main()
 
 
 
