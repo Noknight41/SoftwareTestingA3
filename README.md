@@ -42,6 +42,11 @@ deactivate
 python testing.py DTT
 ```
 
+## Run Function Testing Part using Boundary Value Testing 
+```
+python testing.py BVT
+```
+
 ## Run Function Testing Part using Equivelance Class Testing 
 ```
 python testing.py ECT
