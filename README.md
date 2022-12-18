@@ -1,4 +1,4 @@
-# Set Up (Local)
+# 1.a Set Up Local
 
 ## Install Selenium
 ```
@@ -15,7 +15,7 @@ pip install pylightxl
 Downloaded chromedriver.exe and change PATH to the current position 
 (Already did this)
 
-# Access Virtual ENV
+# 1.b Access Virtual ENV (Alternative to 1.a)
 
 ## Activate VENV
 ```
@@ -35,7 +35,14 @@ pip install -r .\requirement.txt
 deactivate
 ```
 
-# Run Testing Script
+# Run Testing Script with Level 0 (No Assertion, just Action)
+
+## Function Testing Part using Equivelance Class Testing 
+```
+python testing.py
+```
+
+# Run Testing Script with Level 1
 
 ## Run Function Testing Part using Decision Table Testing 
 ```

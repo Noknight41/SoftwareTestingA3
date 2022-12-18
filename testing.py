@@ -12,6 +12,7 @@ import os
 from datetime import datetime
 from excelDriver import Excel 
 from wishListUTC import TH1, TH2, TH3, TH4
+from level0 import TestLogin
 
 USER="jackson@gmail.com"
 PASSWORD="donQuiote3"
@@ -212,6 +213,12 @@ class RunTest:
   def __init__(self):
     pass
   
+  def runLevel0(self):
+    instance = TestLogin()
+    instance.setup_method(None)
+    instance.test_login()
+    instance.teardown_method(None)
+  
   def runDTT(self):
     if os.path.exists('./Output/DTT.xlsx'):
       os.remove('./Output/DTT.xlsx')
@@ -289,6 +296,8 @@ class RunTest:
 def main():
   args = sys.argv[1:]
   if len(args) != 1:
+    instance = RunTest()
+    instance.runLevel0()
     return
   if args[0] in ['DTT', 'BVT', 'ECT', 'UCT', 'NF']:
     instance = RunTest()
